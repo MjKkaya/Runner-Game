@@ -18,7 +18,8 @@ MonoBehaviour:
   - {fileID: 1978775886026106, guid: bbc12ae2f967ec04e8c3c39eeb92733b, type: 3}
   MinLineCount: 100
   MaxLineCount: 200
-  MinEmptySpaceBetweenTwoLines: 10
-  MaxEmptySpaceBetweenTwoLines: 10
-  MaxObstacleAmountOfLine: 1
-  MaxObstacleAmountOfColumn: 1
+  LineHorizontalLength: 6
+  MinEmptySpaceBetweenTwoLines: 3
+  MaxEmptySpaceBetweenTwoLines: 7
+  MaxObstacleAmountOfLine: 4
+  MaxObstacleAmountOfColumn: 3

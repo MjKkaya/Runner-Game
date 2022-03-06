@@ -1,9 +1,9 @@
-using Case.Obstacles;
+using Runner.Obstacles;
 using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace Case.ScripableObjects
+namespace Runner.ScripableObjects
 {
     [CreateAssetMenu(fileName = "LevelDesign_", menuName = "Levels/Create New Level Design", order = 1)]
     public class SOLevelDesign : ScriptableObject
@@ -14,12 +14,6 @@ namespace Case.ScripableObjects
         [SerializeField] private List<GameObject> DestroyableObstacles = new List<GameObject>();
         [SerializeField] private List<GameObject> NoneDestroyableObstacles = new List<GameObject>();
 
-        //[Space(10)]
-        //[Tooltip("Max X values is controlling at runtime.")]
-        //public float ObstacleMinScaleX = 0.25f;
-        //[Tooltip("Max Y values is controlling at runtime.")]
-        //public float ObstacleMinScaleY = 0.25f;
-
         #endregion
 
 
@@ -28,6 +22,9 @@ namespace Case.ScripableObjects
         [Header("Line Properties")]
         [SerializeField] private int MinLineCount = 10;
         [SerializeField] private int MaxLineCount = 100;
+
+        [Tooltip("Line horizontal length must be even number.")]
+        [Range(6, 12)] [SerializeField] private int LineHorizontalLength = 6;
 
         [Space(10)]
         [Range(1, 10)] [SerializeField] private int MinEmptySpaceBetweenTwoLines = 5;
@@ -45,6 +42,14 @@ namespace Case.ScripableObjects
 
 
         #region Calculations
+
+        public int CalculateLineHorizontalLength()
+        {
+            if(LineHorizontalLength % 2  == 0)
+                return LineHorizontalLength;
+            else
+                return LineHorizontalLength + 1;
+        }
 
         public int CalculateLineCount()
         {
@@ -71,18 +76,18 @@ namespace Case.ScripableObjects
 
         #region Get Random Objects
 
-        public ObstacleTpes GetRandomLineObstacleType()
+        public ObstacleTypes GetRandomLineObstacleType()
         {
-            int randomInt = Random.Range(0, (int)ObstacleTpes.Max);
-            return (ObstacleTpes)randomInt;
+            int randomInt = Random.Range(0, (int)ObstacleTypes.Max);
+            return (ObstacleTypes)randomInt;
         }
 
-        public GameObject GetRandomObstacle(ObstacleTpes obstacleTpes)
+        public GameObject GetRandomObstacle(ObstacleTypes obstacleTpes)
         {
             GameObject randomGameObject;
             int randomIndex;
 
-            if (obstacleTpes.Equals(ObstacleTpes.DestroyableObstacle))
+            if (obstacleTpes.Equals(ObstacleTypes.DestroyableObstacle))
             {
                 randomIndex = Random.Range(0, DestroyableObstacles.Count);
                 randomGameObject = DestroyableObstacles[randomIndex];

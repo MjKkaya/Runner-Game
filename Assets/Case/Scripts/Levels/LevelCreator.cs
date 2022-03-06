@@ -1,7 +1,7 @@
 using UnityEngine;
 
 
-namespace Case.Levels
+namespace Runner.Levels
 {
     public class LevelCreator : MonoBehaviour
     {

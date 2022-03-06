@@ -2,7 +2,7 @@ using System;
 using UnityEngine;
 
 
-namespace Case.Managers
+namespace Runner.Managers
 {
     public class GameManager : MonoBehaviour
     {

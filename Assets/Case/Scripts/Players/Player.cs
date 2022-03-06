@@ -1,13 +1,16 @@
 using UnityEngine;
-using Case.Weapones;
+using Runner.Managers;
+using Runner.Weapones;
 
 
-namespace Players
+namespace Runner.Players
 {
     public class Player : MonoBehaviour
     {
-        public Pistol Pistol;
-        public float ShootingInterval = 0.05f;
+        [SerializeField] private Pistol mPistol;
+        [SerializeField] private PlayerMovement mPlayerMovement;
+
+        public float ShootingInterval = 0.1f;
         private float mElapsed = 0f;
 
         private bool mIsShootActive = false;
@@ -20,15 +23,37 @@ namespace Players
             {
                 //Debug.Log("Shoot-a:" + Time.frameCount +","+ (Time.frameCount % ShootingInterval));
                 //Debug.Log("Shoot-b:" + mElapsed);
-                Pistol.Shoot();
+                mPistol.Shoot();
                 mElapsed = 0f;
             }
         }
 
+
+        #region MonoBehaviour Events
+
+        private void Start()
+        {
+            GameManager.Instance.LevelManager.ActionOnLevelCreated += OnLevelCreated;
+        }
+
         private void FixedUpdate()
         {
+            //if(Input.GetKeyDown(KeyCode.F))
             if (mIsShootActive)
                 Shoot();
         }
+
+        #endregion
+
+
+        #region Events
+
+        private void OnLevelCreated()
+        {
+            mIsShootActive = true;
+            mPlayerMovement.SetData(GameManager.Instance.LevelManager.GetFloorLeftBorder(), GameManager.Instance.LevelManager.GetFloorRightBorder());
+        }
+
+        #endregion
     }
 }

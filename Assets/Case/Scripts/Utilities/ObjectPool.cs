@@ -2,7 +2,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace Case.Utilities
+namespace Runner.Utilities
 {
     public class ObjectPool : MonoBehaviour
     {

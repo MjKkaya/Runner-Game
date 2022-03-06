@@ -1,9 +1,9 @@
 using UnityEngine;
 
 
-namespace Case.Obstacles
+namespace Runner.Obstacles
 {
-    public enum ObstacleTpes
+    public enum ObstacleTypes
     {
         DestroyableObstacle = 0,
         NoneDestroyableObstacle = 1,
@@ -14,6 +14,8 @@ namespace Case.Obstacles
 
     public abstract class Obstacle : MonoBehaviour
     {
+        protected Rigidbody mRigidbody;
+
         public void SetPosition(Vector3 newPos)
         {
             float centerBoundsX = gameObject.GetComponent<Renderer>().bounds.center.x;
@@ -26,6 +28,18 @@ namespace Case.Obstacles
             transform.localPosition = new Vector3(newPos.x + gapX, newPos.y + gapY, newPos.z);
         }
 
+        public void SetPositionByBottomObject(Transform bottomObjectTransform)
+        {
+            Vector3 newPos = bottomObjectTransform.localPosition;
+            float objectHeight = bottomObjectTransform.localScale.y;
+            transform.localPosition = new Vector3(newPos.x, newPos.y + objectHeight, newPos.z);
+        }
+
         public abstract void Hit();
+
+        private void Awake()
+        {
+            mRigidbody = GetComponent<Rigidbody>();
+        }
     }
 }

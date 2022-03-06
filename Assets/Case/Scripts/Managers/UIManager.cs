@@ -3,7 +3,7 @@ using UnityEngine.UI;
 using TMPro;
 
 
-namespace Case.Managers
+namespace Runner.Managers
 {
     public class UIManager : MonoBehaviour
     {

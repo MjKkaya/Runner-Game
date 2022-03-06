@@ -1,9 +1,9 @@
-using Case.Utilities;
+using Runner.Utilities;
 using UnityEngine;
 
 
 
-namespace Case.Weapones
+namespace Runner.Weapones
 {
     [RequireComponent(typeof(ObjectPool))]
     public class Pistol : MonoBehaviour

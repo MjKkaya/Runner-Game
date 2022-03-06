@@ -1,8 +1,8 @@
-using Case.Obstacles;
+using Runner.Obstacles;
 using UnityEngine;
 
 
-namespace Case.Weapones
+namespace Runner.Weapones
 {
     //[RequireComponent(typeof(Rigidbody))]
     public class Bullet : MonoBehaviour
@@ -54,13 +54,13 @@ namespace Case.Weapones
 
         private void OnTriggerEnter(Collider other)
         {
-            if(other.CompareTag(ObstacleTpes.DestroyableObstacle.ToString()))
+            if(other.CompareTag(ObstacleTypes.DestroyableObstacle.ToString()))
             {
                 Debug.Log("Bullet-OnTriggerEnter-DestroyableObstacle:" + other.tag + "-" + other.gameObject.name);
                 Disable();
                 other.gameObject.GetComponent<Obstacle>().Hit();
             }
-            else if (other.CompareTag(ObstacleTpes.NoneDestroyableObstacle.ToString()))
+            else if (other.CompareTag(ObstacleTypes.NoneDestroyableObstacle.ToString()))
             {
                 Debug.Log("Bullet-OnTriggerEnter-NoneDestroyableObstacle:" + other.tag + "-" + other.gameObject.name);
                 Disable();

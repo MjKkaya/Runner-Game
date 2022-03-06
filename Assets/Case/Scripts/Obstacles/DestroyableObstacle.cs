@@ -1,4 +1,4 @@
-namespace Case.Obstacles
+namespace Runner.Obstacles
 {
     public class DestroyableObstacle : Obstacle
     {

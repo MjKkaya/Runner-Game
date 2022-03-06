@@ -1,11 +1,12 @@
-using Case.Obstacles;
-using Case.ScripableObjects;
-using Case.Utilities;
+using Runner.Obstacles;
+using Runner.ScripableObjects;
+using Runner.Utilities;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 
 
-namespace Case.Managers
+namespace Runner.Managers
 {
     public class LevelManager : MonoBehaviour
     {
@@ -17,10 +18,12 @@ namespace Case.Managers
             }
         }
 
+        public Action ActionOnLevelCreated;
         public List<SOLevelDesign> Levels = new List<SOLevelDesign>();
 
         private int mLastCompletedLevelIndex = -1;
         private SOLevelDesign mCurrentLevelDesign;
+        private int mLineHorizontalLength;
 
 
         #region Level Environments
@@ -40,17 +43,26 @@ namespace Case.Managers
             mContainerOfObstacles.DestroyAllChildren();
         }
 
+        public float GetFloorLeftBorder()
+        {
+            return mLineHorizontalLength * -0.5f;
+        }
+
+        public float GetFloorRightBorder()
+        {
+            return (mLineHorizontalLength * 0.5f);
+        }
+
 
         private void SetupLevelEnvironments()
         {
             mCurrentLevelDesign = Levels[mLastCompletedLevelIndex + 1];
             mContainerOfObstacles.DestroyAllChildren();
 
-
-
             //Set Floor
+            float newScaleX = mCurrentLevelDesign.CalculateLineHorizontalLength();
             float newScaleY = mCurrentLevelDesign.CalculateLineCount();
-            mFloor.localScale = new Vector3(mFloor.localScale.x, newScaleY, mFloor.localScale.z);
+            mFloor.localScale = new Vector3(newScaleX, newScaleY, mFloor.localScale.z);
             float newPositionZ = (newScaleY * 0.5f) - 0.5f;
             mFloor.localPosition= new Vector3(mFloor.localPosition.x, mFloor.localPosition.y, newPositionZ);
 
@@ -58,6 +70,7 @@ namespace Case.Managers
             //Set Lines
             SetLinesProperties((int)newScaleY);
             CreateLinesObstacle();
+            ActionOnLevelCreated?.Invoke();
         }
 
         private void SetLinesProperties(int lineLength)
@@ -82,26 +95,66 @@ namespace Case.Managers
 
         private void CreateLinesObstacle()
         {
-            ObstacleTpes lineObstacleTpes;
+            ObstacleTypes lineObstacleTypes;
             GameObject prefabObstacle;
+            List<float> objectsPositionX;
+            mLineHorizontalLength = mCurrentLevelDesign.CalculateLineHorizontalLength();
+            int obstacleAmount;
+            float obstacleRandomXPos;
+            int obstacleAmountOfColumn;
+
+            GameObject createdObstacleGO;
+            Obstacle createdObstacleBottom;
+            Obstacle createdObstacle2;
 
             foreach (int lineNumber in mLineNumbersToFill)
             {
-                lineObstacleTpes = mCurrentLevelDesign.GetRandomLineObstacleType();
-                prefabObstacle = mCurrentLevelDesign.GetRandomObstacle(lineObstacleTpes);
-                Debug.Log($"LevelManager-CreateLinesObstacle-lineNumber:{lineNumber}, lineObstacleTpes:{lineObstacleTpes}-{prefabObstacle.name}");
+                lineObstacleTypes = mCurrentLevelDesign.GetRandomLineObstacleType();
+                prefabObstacle = mCurrentLevelDesign.GetRandomObstacle(lineObstacleTypes);
+                Debug.Log($"LevelManager-CreateLinesObstacle-lineNumber:{lineNumber}, lineObstacleTpes:{lineObstacleTypes}-{prefabObstacle.name}");
 
-                int obstacleAmount = mCurrentLevelDesign.CalculateObstacleAmountOfLine();
-
+                obstacleAmount = mCurrentLevelDesign.CalculateObstacleAmountOfLine();
+                objectsPositionX = ResetXPositionsListOfLine(mLineHorizontalLength);
                 for (int i = 0; i < obstacleAmount; i++)
                 {
-                    GameObject createdObstacleGO = Instantiate(prefabObstacle, mContainerOfObstacles);
-                    Obstacle createdObstacle = createdObstacleGO.GetComponent<Obstacle>();
-                    createdObstacle.SetPosition(new Vector3(0, mFloor.localPosition.y, lineNumber));
+                    obstacleRandomXPos = objectsPositionX[UnityEngine.Random.Range(0, objectsPositionX.Count)];
+                    objectsPositionX.Remove(obstacleRandomXPos);
+
+                    createdObstacleGO = Instantiate(prefabObstacle, mContainerOfObstacles);
+                    createdObstacleGO.name = CreateObstacleName(prefabObstacle.name, lineNumber, i, 0);
+                    createdObstacleBottom = createdObstacleGO.GetComponent<Obstacle>();
+                    createdObstacleBottom.SetPosition(new Vector3(obstacleRandomXPos, mFloor.localPosition.y, lineNumber));
+
+                    obstacleAmountOfColumn = mCurrentLevelDesign.CalculateObstacleAmountOfColumn();
+                    for (int k = 1; k < obstacleAmountOfColumn; k++)
+                    {
+                        createdObstacleGO = Instantiate(prefabObstacle, mContainerOfObstacles);
+                        createdObstacleGO.name = CreateObstacleName(prefabObstacle.name, lineNumber, i, k);
+                        createdObstacle2 = createdObstacleGO.GetComponent<Obstacle>();
+                        createdObstacle2.SetPositionByBottomObject(createdObstacleBottom.transform);
+
+                        createdObstacleBottom = createdObstacle2;
+                    }
                 }
             }
         }
 
+        private List<float> ResetXPositionsListOfLine(int lineWidth)
+        {
+            List<float> xPositions = new List<float>();
+            int stepCount = Mathf.FloorToInt(lineWidth * 0.5f);
+
+            for (int i = stepCount*(-1) ; i < stepCount; i++)
+            {
+                xPositions.Add(i);
+            }
+            return xPositions;
+        }
+
+        private string CreateObstacleName(string prefabName, int lineNumber, int rowNumber ,int columnNumber)
+        {
+            return string.Concat(prefabName, "_", lineNumber, "_", rowNumber, "_", columnNumber);
+        }
 
 
         #region Player Prefs
